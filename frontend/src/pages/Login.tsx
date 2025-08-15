@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useNavigate } from "react-router-dom";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+
 
 const Login = () => {
   const [userData, setUserData] = useLocalStorage('userData', { username: '', password: '' });
   const [formValues, setFormValues] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const API_HOST = import.meta.env.VITE_API_HOST;
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormValues({
@@ -19,10 +27,33 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Logging in with:', formValues);
-    // Perform login logic...
+    setError('');
+
+    try {
+      const res = await fetch(`${API_HOST}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formValues)
+      })
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      alert('Login successful!');
+      navigate('/feed');
+    }catch (err) {
+      setError('Login failed. Please check your credentials.');
+      return;
+    }
+
   };
 
   return (
@@ -47,19 +78,30 @@ const Login = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={formValues.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Password
+              </label>
+
+              <div className="relative w-full">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formValues.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                />
+
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                </span>
+              </div>
+            </div>
+
 
           <div className="flex items-center gap-2">
             <input
@@ -79,7 +121,12 @@ const Login = () => {
           >
             Login
           </button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </form>
+
+        <p className="text-sm text-center text-gray-600">
+          Don't have an account? <a href="/signup" className="text-blue-500 hover:underline">Sign Up</a>
+        </p>
       </div>
     </div>
   );
