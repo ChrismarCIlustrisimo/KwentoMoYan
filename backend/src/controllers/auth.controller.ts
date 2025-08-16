@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { loginUser, registerUser } from "../services/auth.services";
-import { PrismaClient } from '../generated/prisma'; // ✅ CORRECT (adjust path if needed)
+import { PrismaClient } from '../generated/prisma'; // ✅ CORRECT (adjust path if needed)]
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -43,9 +44,28 @@ export const signup = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
-        const user = await loginUser(username,password);
-        res.status(200).json({ message: "Login successful", user });
 
+        if (!username || !password) {
+        return res.status(400).json({ message: "Username and password required" });
+        }
+        
+        const user = await loginUser(username,password);
+
+        // Generate JWT token
+        const token = jwt.sign(
+        { id: user.user_id, username: user.username }, // payload
+        process.env.JWT_SECRET as string,          // secret key from .env
+        { expiresIn: "1h" }                        // token expiry
+        );
+
+        // Send response (omit password for safety)
+        const { password: _, ...safeUser } = user;
+
+        res.status(200).json({
+        message: "Login successful",
+        token,
+        user: safeUser,
+        });
 
     }catch (error) {
         if (error instanceof Error) {
