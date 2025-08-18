@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { PrismaClient } from './generated/prisma';
 import authRoutes from "./routes/auth.route";
+import storyRoutes from "./routes/story.route";
+import { PrismaClient } from '@prisma/client'; // Adjust path if needed
 
 
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+app.use("/story", storyRoutes);
 
 
 

@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma'; // ✅ CORRECT (adjust path if needed)
+import { PrismaClient } from '@prisma/client';
 import bcrypt from "bcryptjs";
 
 

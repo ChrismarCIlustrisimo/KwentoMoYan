@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { loginUser, registerUser } from "../services/auth.services";
-import { PrismaClient } from '../generated/prisma'; // ✅ CORRECT (adjust path if needed)]
 import jwt from "jsonwebtoken";
+import { PrismaClient } from '@prisma/client'; // Adjust path if needed
 
 const prisma = new PrismaClient();
 
@@ -51,12 +51,12 @@ export const login = async (req: Request, res: Response) => {
         
         const user = await loginUser(username,password);
 
-        // Generate JWT token
         const token = jwt.sign(
-        { id: user.user_id, username: user.username }, // payload
-        process.env.JWT_SECRET as string,          // secret key from .env
-        { expiresIn: "1h" }                        // token expiry
+          { user_id: user.user_id, username: user.username },
+          process.env.JWT_SECRET as string,
+          { expiresIn: "1h" }
         );
+
 
         // Send response (omit password for safety)
         const { password: _, ...safeUser } = user;
