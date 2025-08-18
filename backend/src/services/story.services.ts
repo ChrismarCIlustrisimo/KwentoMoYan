@@ -14,7 +14,27 @@ export const createPost = async (user_id: number, title: string, content: string
             }
         })
 
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        } else {
+            throw new Error("An unknown error occurred");
+        }
+    }
+}
 
+export const getAllPostsService = async () => {
+    try {
+        return await prisma.story.findMany({
+            include: {
+                user: {
+                    select: {
+                        user_id: true,
+                        name: true,
+                }
+            }
+        }
+        });
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(error.message);
