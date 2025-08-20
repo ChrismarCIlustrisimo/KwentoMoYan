@@ -57,15 +57,22 @@ export const login = async (req: Request, res: Response) => {
           { expiresIn: "1h" }
         );
 
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 60 * 60 * 100
+        })
+
 
         // Send response (omit password for safety)
         const { password: _, ...safeUser } = user;
 
         res.status(200).json({
         message: "Login successful",
-        token,
         user: safeUser,
         });
+
 
     }catch (error) {
         if (error instanceof Error) {

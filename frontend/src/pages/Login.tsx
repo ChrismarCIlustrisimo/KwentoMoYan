@@ -34,10 +34,8 @@ const Login = () => {
     try {
       const res = await fetch(`${API_HOST}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formValues)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formValues),
       })
 
       const data = await res.json();
@@ -47,6 +45,7 @@ const Login = () => {
       }
 
       localStorage.setItem('token', data.token);
+      
       alert('Login successful!');
       navigate('/feed');
     }catch (err) {
