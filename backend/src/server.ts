@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth.route";
 import storyRoutes from "./routes/story.route";
 import userRoutes from "./routes/user.route";
 import { PrismaClient } from "@prisma/client";
-import cookieParser from "cookie-parser";
+import session from "express-session";
 
 dotenv.config();
 
@@ -16,7 +16,20 @@ app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }));
-app.use(cookieParser());
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // only over HTTPS in prod
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60, // 1 hour
+    },
+  })
+);
 app.use(express.json());
 
 // routes

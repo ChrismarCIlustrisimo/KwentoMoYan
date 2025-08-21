@@ -42,43 +42,47 @@ export const signup = async (req: Request, res: Response) => {
 
 
 export const login = async (req: Request, res: Response) => {
-    try {
-        const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-        if (!username || !password) {
-        return res.status(400).json({ message: "Username and password required" });
-        }
-        
-        const user = await loginUser(username,password);
-
-        const token = jwt.sign(
-          { user_id: user.user_id, username: user.username },
-          process.env.JWT_SECRET as string,
-          { expiresIn: "1h" }
-        );
-
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 60 * 60 * 100
-        })
-
-
-        // Send response (omit password for safety)
-        const { password: _, ...safeUser } = user;
-
-        res.status(200).json({
-        message: "Login successful",
-        user: safeUser,
-        });
-
-
-    }catch (error) {
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: "An unknown error occurred" });
-        }
+    if (!username || !password) {
+      return res.status(400).json({ message: "Username and password required" });
     }
-}
+
+    const user = await loginUser(username, password);
+
+    // Create session on the server
+    req.session.user = {
+      user_id: user.user_id,
+      username: user.username,
+    };
+
+
+
+    // Remove password before sending
+    const { password: _, ...safeUser } = user;
+
+    res.status(200).json({
+      message: "Login successful",
+      user: safeUser,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+};
+
+
+// LOGOUT endpoint (destroys session)
+export const logout = (req: Request, res: Response) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to log out" });
+    }
+    res.clearCookie("connect.sid"); // default session cookie name
+    res.status(200).json({ message: "Logout successful" });
+  });
+};
