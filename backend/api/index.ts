@@ -3,7 +3,7 @@ import app from "../src/app";
 
 export const config = {
   api: {
-    bodyParser: false, // lets express handle JSON
+    bodyParser: false, // let Express handle JSON
   },
 };
 
