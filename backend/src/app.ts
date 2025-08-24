@@ -11,7 +11,6 @@ dotenv.config();
 
 const app = express();
 
-// middleware
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true
@@ -28,7 +27,7 @@ app.use(
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 1000 * 60 * 60, // 1 hr
+      maxAge: 1000 * 60 * 60,
     },
   })
 );
