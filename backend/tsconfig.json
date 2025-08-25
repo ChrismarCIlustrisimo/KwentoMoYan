@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
-    "rootDir": ".",        
+    "rootDir": ".",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
@@ -10,5 +10,6 @@
     "skipLibCheck": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*.ts", "api/**/*.ts", "src/types/**/*.d.ts"] 
+  "include": ["src/**/*.ts", "api/**/*.ts", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", ".vercel", "dist"]
 }
