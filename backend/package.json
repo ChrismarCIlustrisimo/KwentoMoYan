@@ -1,4 +1,15 @@
 {
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "vercel-build": "npm run build",
+    "postinstall": "prisma generate"
+  },
   "dependencies": {
     "@prisma/client": "^6.14.0",
     "0g": "^0.4.2",
@@ -28,18 +39,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-"scripts": {
-  "dev": "nodemon --exec ts-node src/server.ts",
-  "build": "tsc",
-  "vercel-build": "npm run build",
-  "postinstall": "prisma generate"
-},
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  }
 }
